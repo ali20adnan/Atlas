@@ -42,6 +42,8 @@ export const ar = {
 
   scanTitle: 'مسح الرمز',
   scanHint: 'ضع الرمز داخل الإطار',
+  cameraUnavailableTitle: 'الكاميرا غير متاحة',
+  cameraUnavailableBody: 'لا توجد معاينة للكاميرا على هذا الجهاز. أدخل الرمز للبحث عن الصنف.',
   scanPermissionTitle: 'يلزم الوصول إلى الكاميرا',
   scanPermissionBody: 'اسمح للكاميرا بمسح باركود وQR أصناف المستودع.',
   allowCamera: 'السماح للكاميرا',
@@ -115,6 +117,7 @@ export const ar = {
   themeDark: 'داكن',
   themeSystem: 'النظام',
   account: 'الحساب',
+  catalogKicker: 'الفهرس',
   signedInAs: 'مسجّل الدخول باسم',
   roleSupervisor: 'مشرف',
   roleOperator: 'مشغّل',

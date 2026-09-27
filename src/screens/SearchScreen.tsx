@@ -1,17 +1,17 @@
 import { Search as SearchIcon, X } from 'lucide-react-native';
 import React, { useCallback, useMemo, useState } from 'react';
-import { FlatList, TextInput, View } from 'react-native';
+import { FlatList, StyleSheet, TextInput, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import type { CompositeScreenProps } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useFocusEffect } from '@react-navigation/native';
 import { ItemCard } from '../components/ItemCard';
-import { AppText, IconBtn, Screen, hair, useLayout } from '../components/ui';
+import { AppText, IconBtn, Kicker, Screen, useLayout } from '../components/ui';
 import { CATALOG, searchItems } from '../data/catalog';
 import type { MainTabParamList, RootStackParamList } from '../navigation/types';
 import type { WarehouseItem } from '../types';
-import { radius, type } from '../theme/tokens';
+import { elevation, radius, space, type } from '../theme/tokens';
 
 type Props = CompositeScreenProps<
   BottomTabScreenProps<MainTabParamList, 'Search'>,
@@ -20,7 +20,7 @@ type Props = CompositeScreenProps<
 
 export function SearchScreen({ navigation, route }: Props) {
   const { t } = useTranslation();
-  const { colors, row, writing, textAlign, fonts } = useLayout();
+  const { colors, row, writing, textAlign, fonts, isRTL } = useLayout();
   const [query, setQuery] = useState(route.params?.q ?? '');
   const [focused, setFocused] = useState(false);
 
@@ -33,38 +33,37 @@ export function SearchScreen({ navigation, route }: Props) {
   const results = useMemo(() => (query.trim() ? searchItems(query) : CATALOG), [query]);
 
   return (
-    <Screen>
-      <View
-        style={{
-          marginTop: 8,
-          borderRadius: radius.full,
-          overflow: 'hidden',
-          backgroundColor: colors.surface,
-          borderWidth: hair,
-          borderColor: focused ? colors.accent : colors.border,
-        }}
-      >
+    <Screen style={{ paddingLeft: 0, paddingRight: 0 }}>
+      <View style={{ paddingHorizontal: 20, paddingTop: 8, gap: 14 }}>
+        <Kicker tone="muted">{t('catalogKicker')}</Kicker>
+        <AppText weight="bold" style={{ fontSize: type.display, lineHeight: 46, letterSpacing: isRTL ? 0 : -0.5 }}>
+          {t('search')}
+        </AppText>
         <View
-          style={{
-            minHeight: 56,
-            flexDirection: row,
-            alignItems: 'center',
-            paddingHorizontal: 8,
-            gap: 8,
-          }}
-        >
-          <View
-            style={{
-              width: 40,
-              height: 40,
+          style={[
+            {
+              minHeight: 56,
               borderRadius: radius.full,
-              backgroundColor: focused ? colors.accentSoft : colors.surfaceMuted,
+              backgroundColor: focused ? colors.surface : colors.surfaceMuted,
+              borderWidth: 1.5,
+              borderColor: focused ? colors.accent : 'transparent',
+              flexDirection: row,
               alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <SearchIcon size={18} color={focused ? colors.accent : colors.textMuted} strokeWidth={1.75} />
-          </View>
+              paddingHorizontal: 18,
+              gap: 10,
+            },
+            focused
+              ? {
+                  shadowColor: colors.accent,
+                  shadowOffset: { width: 0, height: 6 },
+                  shadowRadius: 16,
+                  shadowOpacity: 0.18,
+                  elevation: 4,
+                }
+              : undefined,
+          ]}
+        >
+          <SearchIcon size={18} color={focused ? colors.accent : colors.textMuted} strokeWidth={1.75} />
           <TextInput
             value={query}
             onChangeText={setQuery}
@@ -88,53 +87,55 @@ export function SearchScreen({ navigation, route }: Props) {
             }}
           />
           {query ? (
-            <IconBtn label={t('clearRecent')} onPress={() => setQuery('')}>
+            <IconBtn label={t('clearRecent')} onPress={() => setQuery('')} size={32}>
               <X size={16} color={colors.textMuted} strokeWidth={1.75} />
             </IconBtn>
           ) : null}
         </View>
+        <AppText tone="muted" weight="medium" style={{ fontSize: type.micro, marginBottom: 2 }}>
+          {t('resultsCount', { count: results.length })}
+        </AppText>
       </View>
 
       <View
         style={{
-          marginTop: 16,
+          flex: 1,
+          marginHorizontal: 20,
+          marginTop: space[8],
           marginBottom: 12,
-          flexDirection: row,
-          alignItems: 'center',
+          backgroundColor: results.length ? colors.surface : 'transparent',
+          borderRadius: radius.xl,
+          borderWidth: results.length ? StyleSheet.hairlineWidth : 0,
+          borderColor: colors.border,
+          overflow: 'hidden',
+          ...(results.length ? elevation.card(colors) : undefined),
         }}
       >
-        <View
-          style={{
-            backgroundColor: colors.surfaceMuted,
-            borderRadius: radius.full,
-            paddingHorizontal: 12,
-            paddingVertical: 6,
-          }}
-        >
-          <AppText tone="secondary" weight="medium" style={{ fontSize: type.label }}>
-            {t('resultsCount', { count: results.length })}
-          </AppText>
-        </View>
+        <FlatList
+          data={results}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={{ paddingBottom: 4, flexGrow: 1 }}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
+          ItemSeparatorComponent={() => (
+            <View style={{ height: StyleSheet.hairlineWidth, backgroundColor: colors.border, marginHorizontal: 16 }} />
+          )}
+          renderItem={({ item }: { item: WarehouseItem }) => (
+            <ItemCard item={item} onPress={() => navigation.navigate('ItemDetail', { id: item.id })} />
+          )}
+          ListEmptyComponent={
+            <View style={{ paddingTop: 28, paddingHorizontal: 4, gap: 6 }}>
+              <AppText weight="semibold" style={{ fontSize: type.title }}>
+                {t('noResultsTitle')}
+              </AppText>
+              <AppText tone="secondary" style={{ fontSize: type.body }}>
+                {t('noResultsBody')}
+              </AppText>
+            </View>
+          }
+        />
       </View>
-
-      <FlatList
-        data={results}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={{ paddingBottom: 96, flexGrow: 1 }}
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
-        keyboardDismissMode="on-drag"
-        renderItem={({ item }: { item: WarehouseItem }) => (
-          <ItemCard item={item} onPress={() => navigation.navigate('ItemDetail', { id: item.id })} />
-        )}
-        ListEmptyComponent={
-          <View style={{ paddingTop: 64 }}>
-            <AppText tone="secondary" style={{ fontSize: type.body }}>
-              {t('noResultsBody')}
-            </AppText>
-          </View>
-        }
-      />
     </Screen>
   );
 }

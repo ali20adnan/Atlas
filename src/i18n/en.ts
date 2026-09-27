@@ -23,6 +23,7 @@ export const en = {
   home: 'Home',
   scan: 'Scan',
   search: 'Search',
+  catalogKicker: 'Catalog',
   more: 'More',
   settings: 'Settings',
 
@@ -42,6 +43,8 @@ export const en = {
 
   scanTitle: 'Scan barcode',
   scanHint: 'Align the code inside the frame',
+  cameraUnavailableTitle: 'Camera unavailable',
+  cameraUnavailableBody: 'This device has no camera preview. Enter a code to look up the item.',
   scanPermissionTitle: 'Camera access needed',
   scanPermissionBody: 'Allow camera access to scan warehouse barcodes and QR codes.',
   allowCamera: 'Allow camera',

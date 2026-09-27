@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import type { ItemStatus } from '../types';
 import { radius, type } from '../theme/tokens';
@@ -17,7 +17,7 @@ const TONE: Record<ItemStatus, 'accent' | 'warning' | 'danger' | 'info' | 'reser
 
 export const StatusBadge = React.memo(function StatusBadge({ status }: { status: ItemStatus }) {
   const { t } = useTranslation();
-  const { colors } = useLayout();
+  const { colors, row } = useLayout();
   const tone = TONE[status];
   const fg =
     tone === 'accent'
@@ -39,15 +39,32 @@ export const StatusBadge = React.memo(function StatusBadge({ status }: { status:
           : tone === 'reserved'
             ? colors.reservedSoft
             : colors.infoSoft;
+  const border =
+    tone === 'accent'
+      ? colors.accentBorder
+      : tone === 'warning'
+        ? colors.warningBorder
+        : tone === 'danger'
+          ? colors.dangerBorder
+          : tone === 'reserved'
+            ? colors.reservedBorder
+            : colors.infoBorder;
   return (
     <View
       style={{
+        flexDirection: row,
+        alignItems: 'center',
+        alignSelf: 'flex-start',
+        gap: 6,
         backgroundColor: bg,
         borderRadius: radius.full,
-        paddingHorizontal: 10,
-        paddingVertical: 4,
+        borderWidth: StyleSheet.hairlineWidth,
+        borderColor: border,
+        paddingHorizontal: 12,
+        paddingVertical: 5,
       }}
     >
+      <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: fg }} />
       <AppText weight="semibold" style={{ color: fg, fontSize: type.label }}>
         {t(`status_${status}`)}
       </AppText>

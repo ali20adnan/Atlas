@@ -1,17 +1,18 @@
-import { Eye, EyeOff } from 'lucide-react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Eye, EyeOff, ScanLine } from 'lucide-react-native';
 import React, { useState } from 'react';
-import { KeyboardAvoidingView, Platform, Pressable, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { useSettings } from '../context/SettingsContext';
-import { AppText, Button, Field, IconBtn, Screen, useLayout } from '../components/ui';
-import { type } from '../theme/tokens';
+import { AppText, Button, Field, IconBtn, Kicker, Screen, useLayout } from '../components/ui';
+import { elevation, radius, type } from '../theme/tokens';
 
 export function LoginScreen() {
   const { t } = useTranslation();
   const { login } = useAuth();
   const { lang, setLang } = useSettings();
-  const { colors } = useLayout();
+  const { colors, row, isRTL } = useLayout();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [show, setShow] = useState(false);
@@ -42,31 +43,59 @@ export function LoginScreen() {
   return (
     <Screen>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1 }}>
-        <View style={{ alignItems: 'flex-end', marginTop: 4 }}>
+        <View style={{ flexDirection: row, alignItems: 'center', justifyContent: 'space-between', marginTop: 8 }}>
+          <LinearGradient
+            colors={colors.accentGradient}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={{
+              width: 52,
+              height: 52,
+              borderRadius: 18,
+              alignItems: 'center',
+              justifyContent: 'center',
+              ...elevation.cta(colors),
+            }}
+          >
+            <ScanLine size={24} color="#F5E9CE" strokeWidth={1.75} />
+          </LinearGradient>
           <Pressable
             onPress={() => void setLang(lang === 'ar' ? 'en' : 'ar')}
             accessibilityRole="button"
             accessibilityLabel={lang === 'ar' ? t('english') : t('arabic')}
             hitSlop={8}
-            style={{ minHeight: 44, justifyContent: 'center' }}
+            style={({ pressed }) => ({
+              minHeight: 40,
+              justifyContent: 'center',
+              paddingHorizontal: 16,
+              borderRadius: radius.full,
+              backgroundColor: colors.surface,
+              borderWidth: StyleSheet.hairlineWidth,
+              borderColor: colors.border,
+              opacity: pressed ? 0.7 : 1,
+              ...elevation.card(colors),
+            })}
           >
-            <AppText tone="secondary" style={{ fontSize: type.label }}>
+            <AppText weight="medium" style={{ fontSize: type.label }}>
               {lang === 'ar' ? 'English' : 'العربية'}
             </AppText>
           </Pressable>
         </View>
 
-        <View style={{ flex: 1, justifyContent: 'center', gap: 32, paddingBottom: 48 }}>
-          <View style={{ gap: 8 }}>
-            <AppText weight="semibold" style={{ fontSize: type.display }}>
-              {t('appName')}
-            </AppText>
-            <AppText tone="muted" style={{ fontSize: type.body }}>
-              {t('appTagline')}
-            </AppText>
-          </View>
+        <View style={{ marginTop: 44, gap: 10 }}>
+          <Kicker>{t('orgName')}</Kicker>
+          <AppText
+            weight="bold"
+            style={{ fontSize: type.display, lineHeight: 46, letterSpacing: isRTL ? 0 : -0.5 }}
+          >
+            {t('appName')}
+          </AppText>
+          <AppText tone="secondary" style={{ fontSize: type.body, lineHeight: 24, maxWidth: 300 }}>
+            {t('appTagline')}
+          </AppText>
+        </View>
 
-          <View style={{ gap: 16 }}>
+        <View style={{ marginTop: 40, gap: 16 }}>
             <Field
               label={t('username')}
               value={username}
@@ -113,6 +142,17 @@ export function LoginScreen() {
             ) : null}
             <Button label={busy ? t('signingIn') : t('signIn')} loading={busy} onPress={() => void onSubmit()} />
           </View>
+
+        <View style={{ marginTop: 'auto', marginBottom: 12, gap: 6, alignItems: 'center' }}>
+          <Kicker tone="muted" style={{ letterSpacing: 1 }}>
+            {t('demoHint')}
+          </Kicker>
+          <AppText tone="muted" style={{ fontSize: type.label }}>
+            {t('demoAdmin')}
+          </AppText>
+          <AppText tone="muted" style={{ fontSize: type.label }}>
+            {t('demoOp')}
+          </AppText>
         </View>
       </KeyboardAvoidingView>
     </Screen>

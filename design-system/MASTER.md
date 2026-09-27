@@ -11,31 +11,41 @@ Enterprise warehouse operations app for bilingual (Arabic / English) Android and
 - **End moment:** Clear location + quantity + next action
 
 ## Style
-Minimalism & Swiss Style. Industrial slate + stock green. No decoration for its own sake.
+Quiet luxury. Porcelain & ink neutrals, jewel emerald CTAs, champagne-gold kickers and camera chrome. Depth through layered shadows + hairlines, gradients only on brand surfaces and primary CTAs. No decoration for its own sake.
 
 ## Color tokens
 
 | Role | Light | Dark |
 |------|-------|------|
-| Background | `#F8FAFC` | `#0B1220` |
-| Surface | `#FFFFFF` | `#111827` |
-| Surface muted | `#F1F5F9` | `#1E293B` |
-| Foreground | `#0F172A` | `#F8FAFC` |
-| Secondary text | `#475569` | `#CBD5E1` |
-| Muted text | `#64748B` | `#94A3B8` |
-| Border | `#E2E8F0` | `#243044` |
-| Accent / CTA | `#059669` | `#34D399` |
-| Accent soft | `#ECFDF5` | `#064E3B` |
-| Warning | `#D97706` | `#FBBF24` |
-| Danger | `#DC2626` | `#F87171` |
+| Background | `#F5F4EF` | `#0A0F0D` |
+| Surface | `#FFFFFF` | `#131A16` |
+| Surface muted | `#EDEBE3` | `#1D2621` |
+| Foreground | `#101815` | `#F2F6F3` |
+| Secondary text | `#3A4A43` | `#C3CFC8` |
+| Muted text | `#68786F` | `#8FA198` |
+| Border | `#E3E1D8` | `#27322C` |
+| Accent / CTA | `#0E6B4A` | `#43DE9B` |
+| Accent gradient | `#18A572 → #0C5C3F` | `#4FE6AC → #1E9E6E` |
+| Gold (kickers, camera) | `#A5823C` | `#D8BC80` |
+| Accent soft | `#E3F2EA` | `#103425` |
+| Warning | `#9A6700` | `#F0C24E` |
+| Danger | `#B42318` | `#EF9187` |
 
-Primary CTA is emerald (10%). Surfaces are slate neutrals (60/30).
+Primary CTA is an emerald gradient pill with a soft accent shadow. Surfaces are warm neutrals (60/30). Gold is the 5% accent — kickers, viewfinder, avatar ring, active camera tab.
 
 ## Typography
-- Latin: Noto Sans 400 / 600
-- Arabic: Noto Sans Arabic 400 / 600
-- Sizes: 13 label, 15 body, 18 title, 28 display
+- Latin: Noto Sans 400 / 600 / 700
+- Arabic: Noto Sans Arabic 400 / 600 / 700
+- Sizes: 11 micro (kicker), 13 label, 16 body, 20 title, 40 display
 - Line height body: 1.5
+- Kickers: uppercase, letter-spacing 1.6 — **Latin only; never letter-space or uppercase Arabic** (it breaks letterform joining)
+- Display titles: bold, negative tracking (-0.5) in Latin only
+
+## Depth
+- Cards: radius 26, hairline border + soft shadow (`elevation.card`)
+- Floating chrome (tab bar, sheets): `elevation.float`
+- CTAs: gradient + `elevation.cta` accent-tinted shadow
+- Fields: filled muted; on focus lift to surface + 1.5 accent border + glow
 
 ## Spacing
 8-point grid: 4, 8, 12, 16, 24, 32, 48.

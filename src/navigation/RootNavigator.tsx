@@ -2,8 +2,8 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { ScanLine, Search, User } from 'lucide-react-native';
 import React from 'react';
+import { Pressable, Text, View, type PressableProps } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Platform, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../context/AuthContext';
 import { useSettings } from '../context/SettingsContext';
@@ -12,46 +12,68 @@ import { LoginScreen } from '../screens/LoginScreen';
 import { ScanScreen } from '../screens/ScanScreen';
 import { SearchScreen } from '../screens/SearchScreen';
 import { SettingsScreen } from '../screens/SettingsScreen';
-import { radius } from '../theme/tokens';
+import { tabBarChrome } from './tabBarChrome';
 import type { MainTabParamList, RootStackParamList } from './types';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
+/** Tab hit target with premium hover (web) + press (all platforms) feedback. */
+function TabButton({ style, ...props }: PressableProps) {
+  return (
+    <Pressable
+      {...props}
+      style={(state) => [
+        typeof style === 'function' ? style(state) : style,
+        {
+          opacity: state.pressed ? 0.7 : 1,
+          transform: [{ scale: state.pressed ? 0.96 : (state as { hovered?: boolean }).hovered ? 0.97 : 1 }],
+        },
+        // RN Web only; the key stays absent on native so no invalid style warning.
+        (state as { hovered?: boolean }).hovered ? { cursor: 'pointer' as never } : null,
+      ]}
+    />
+  );
+}
+
+/**
+ * Built-in tab labels collapse to a ~5px box on RN Web (font-metric clash in
+ * bottom-tabs' label layout), so we render icon + label ourselves — the same
+ * Text setup that renders correctly on every other screen.
+ */
 function Tabs() {
   const { t } = useTranslation();
-  const { colors } = useSettings();
+  const { colors, fonts, isRTL } = useSettings();
   const insets = useSafeAreaInsets();
-  const island = {
-    height: 64,
-    marginHorizontal: 16,
-    marginBottom: Math.max(insets.bottom, 10),
-    borderRadius: radius.xl,
-    borderTopWidth: 0,
-    borderWidth: StyleSheet.hairlineWidth,
-    paddingTop: 8,
-    paddingBottom: 8,
-    elevation: 16,
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowRadius: 18,
-    shadowOffset: { width: 0, height: 8 },
-    ...Platform.select({ android: { elevation: 16 } }),
-  };
+  const bar = tabBarChrome(colors, insets.bottom);
+  const tabIcon = (Icon: typeof Search, label: string) => ({ color }: { color: string }) => (
+    <View style={{ alignItems: 'center', gap: 4 }}>
+      <Icon size={22} color={color} strokeWidth={1.75} />
+      <Text
+        numberOfLines={1}
+        style={{
+          color,
+          fontFamily: fonts.semibold,
+          fontSize: 11,
+          lineHeight: 14,
+          writingDirection: isRTL ? 'rtl' : 'ltr',
+        }}
+      >
+        {label}
+      </Text>
+    </View>
+  );
   return (
     <Tab.Navigator
       initialRouteName="ScanTab"
       screenOptions={{
         headerShown: false,
         tabBarHideOnKeyboard: true,
-        tabBarActiveTintColor: colors.accent,
-        tabBarInactiveTintColor: colors.textMuted,
-        tabBarLabelStyle: { fontSize: 11, fontWeight: '600', marginTop: 2 },
-        tabBarStyle: {
-          ...island,
-          backgroundColor: colors.surface,
-          borderColor: colors.border,
-        },
+        tabBarShowLabel: false,
+        tabBarActiveTintColor: bar.tabBarActiveTintColor,
+        tabBarInactiveTintColor: bar.tabBarInactiveTintColor,
+        tabBarButton: TabButton,
+        tabBarStyle: bar.tabBarStyle,
       }}
     >
       <Tab.Screen
@@ -59,7 +81,7 @@ function Tabs() {
         component={SearchScreen}
         options={{
           tabBarLabel: t('search'),
-          tabBarIcon: ({ color }) => <Search size={22} color={color} strokeWidth={1.75} />,
+          tabBarIcon: tabIcon(Search, t('search')),
         }}
       />
       <Tab.Screen
@@ -67,14 +89,8 @@ function Tabs() {
         component={ScanScreen}
         options={{
           tabBarLabel: t('scan'),
-          tabBarIcon: ({ color }) => <ScanLine size={22} color={color} strokeWidth={1.75} />,
-          tabBarStyle: {
-            ...island,
-            backgroundColor: 'rgba(15, 23, 42, 0.92)',
-            borderColor: 'rgba(248,250,252,0.12)',
-          },
-          tabBarActiveTintColor: '#34D399',
-          tabBarInactiveTintColor: 'rgba(248,250,252,0.5)',
+          tabBarIcon: tabIcon(ScanLine, t('scan')),
+          ...tabBarChrome(colors, insets.bottom, true),
         }}
       />
       <Tab.Screen
@@ -82,7 +98,7 @@ function Tabs() {
         component={SettingsScreen}
         options={{
           tabBarLabel: t('account'),
-          tabBarIcon: ({ color }) => <User size={22} color={color} strokeWidth={1.75} />,
+          tabBarIcon: tabIcon(User, t('account')),
         }}
       />
     </Tab.Navigator>
