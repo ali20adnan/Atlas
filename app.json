@@ -54,7 +54,7 @@
     },
     "updates": {
       "enabled": true,
-      "checkAutomatically": "ON_LOAD",
+      "checkAutomatically": "ERROR_CHECK_ONLY",
       "fallbackToCacheTimeout": 0
     }
   }

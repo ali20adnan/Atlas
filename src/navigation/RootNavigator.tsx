@@ -47,7 +47,7 @@ function Tabs() {
   const insets = useSafeAreaInsets();
   const bar = tabBarChrome(colors, insets.bottom);
   const tabIcon = (Icon: typeof Search, label: string) => ({ color }: { color: string }) => (
-    <View style={{ alignItems: 'center', gap: 4 }}>
+    <View style={{ alignItems: 'center', gap: 4, minWidth: 72 }}>
       <Icon size={22} color={color} strokeWidth={1.75} />
       <Text
         numberOfLines={1}
